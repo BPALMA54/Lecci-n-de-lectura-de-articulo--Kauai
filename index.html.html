@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kauai — Quiz Avanzado</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cabinet+Grotesk:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #07090f;
+  --s1:      #0d1120;
+  --s2:      #131929;
+  --card:    #161e30;
+  --border:  #1f2d4a;
+  --teal:    #00e5b4;
+  --teal2:   #00bfa0;
+  --gold:    #f5c518;
+  --red:     #ff4757;
+  --blue:    #4da6ff;
+  --green:   #2ed573;
+  --orange:  #ff6b35;
+  --white:   #eef2ff;
+  --muted:   #5a7090;
+  --timer-c: var(--teal);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Cabinet Grotesk',sans-serif;
+  background:var(--bg);
+  color:var(--white);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* GRID BG */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,229,180,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,180,.03) 1px,transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;z-index:0;
+}
+
+/* SCREENS */
+.screen{display:none;position:relative;z-index:1}
+.screen.active{display:block}
+
+/* ══════════════════════════════
+   SCREEN: LESSON
+══════════════════════════════ */
+#s-lesson{max-width:900px;margin:0 auto;padding:56px 24px 100px}
+
+.top-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,229,180,.08);
+  border:1px solid rgba(0,229,180,.25);
+  color:var(--teal);
+  padding:6px 16px;border-radius:99px;
+  font-size:11px;font-weight:700;letter-spacing:3px;
+  text-transform:uppercase;margin-bottom:28px;
+}
+
+.hero-title{
+  font-family:'Bebas Neue',cursive;
+  font-size:clamp(3rem,8vw,6rem);
+  line-height:.95;
+  margin-bottom:20px;
+  letter-spacing:2px;
+}
+.hero-title em{color:var(--teal);font-style:normal}
+
+.hero-sub{
+  color:var(--muted);font-size:1rem;
+  max-width:560px;line-height:1.75;margin-bottom:48px;
+}
+
+/* LESSON BLOCKS */
+.lesson-section{margin-bottom:48px}
+.ls-label{
+  font-size:10px;font-weight:700;letter-spacing:3px;
+  text-transform:uppercase;color:var(--teal);
+  margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
+.ls-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.lesson-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+
+.lc{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:24px;
+  position:relative;overflow:hidden;
+  transition:border-color .3s,transform .2s;
+}
+.lc:hover{border-color:rgba(0,229,180,.4);transform:translateY(-3px)}
+.lc-accent{
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--ac,var(--teal));
+}
+.lc-icon{font-size:1.8rem;margin-bottom:12px}
+.lc h3{font-size:.95rem;font-weight:800;margin-bottom:8px;color:var(--white)}
+.lc p{font-size:.85rem;color:#7a9cc0;line-height:1.7}
+.lc.gold{--ac:var(--gold)}
+.lc.red{--ac:var(--red)}
+.lc.blue{--ac:var(--blue)}
+.lc.green{--ac:var(--green)}
+.lc.orange{--ac:var(--orange)}
+
+/* STAT GRID */
+.stat-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;margin-top:16px;
+}
+.stat-item{
+  background:rgba(0,229,180,.06);border:1px solid rgba(0,229,180,.15);
+  border-radius:12px;padding:14px 16px;
+}
+.stat-num{
+  font-family:'Bebas Neue',cursive;
+  font-size:2rem;color:var(--teal);line-height:1;
+}
+.stat-desc{font-size:.75rem;color:var(--muted);margin-top:4px;line-height:1.4}
+
+/* CLUSTERS */
+.cluster-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.cluster{
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;
+}
+.cluster-num{
+  font-family:'Bebas Neue',cursive;font-size:1.4rem;
+  color:var(--gold);margin-bottom:4px;
+}
+.cluster p{font-size:.8rem;color:#7a9cc0;line-height:1.5}
+
+/* QUOTE BLOCK */
+.quote-block{
+  background:var(--card);border-left:3px solid var(--teal);
+  border-radius:0 12px 12px 0;padding:20px 24px;
+  font-size:.9rem;color:#a0c0e0;line-height:1.8;
+  font-style:italic;margin:16px 0;
+}
+.quote-src{font-size:.78rem;color:var(--muted);font-style:normal;margin-top:8px}
+
+/* CTA BLOCK */
+.cta-block{
+  background:linear-gradient(135deg,rgba(0,229,180,.08),rgba(77,166,255,.06));
+  border:1px solid rgba(0,229,180,.2);
+  border-radius:20px;padding:36px;
+  text-align:center;margin-top:24px;
+}
+.cta-block h3{font-family:'Bebas Neue';font-size:2rem;letter-spacing:2px;margin-bottom:8px}
+.cta-block p{color:var(--muted);font-size:.9rem;margin-bottom:24px}
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* ══════════════════════════════
+   SCREEN: MODE SELECT
+══════════════════════════════ */
+#s-mode{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px;
+}
+.mode-wrap{max-width:680px;width:100%;text-align:center}
+.mode-wrap h2{
+  font-family:'Bebas Neue';font-size:2.8rem;letter-spacing:3px;
+  margin-bottom:8px;
+}
+.mode-wrap .ms{color:var(--muted);font-size:.9rem;margin-bottom:40px}
+
+.mode-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+@media(max-width:500px){.mode-cards{grid-template-columns:1fr}}
+
+.mode-card{
+  background:var(--card);border:2px solid var(--border);
+  border-radius:20px;padding:32px 24px;cursor:pointer;
+  transition:border-color .2s,transform .2s,background .2s;
+  text-align:center;
+}
+.mode-card:hover{transform:translateY(-4px)}
+.mode-card.selected{border-color:var(--teal);background:rgba(0,229,180,.06)}
+.mode-card .mc-icon{font-size:3rem;margin-bottom:12px}
+.mode-card h3{font-family:'Bebas Neue';font-size:1.5rem;letter-spacing:2px;margin-bottom:8px}
+.mode-card p{font-size:.82rem;color:var(--muted);line-height:1.6}
+.mode-card .mc-tag{
+  display:inline-block;margin-top:12px;
+  background:rgba(0,229,180,.12);border:1px solid rgba(0,229,180,.3);
+  color:var(--teal);border-radius:99px;
+  padding:3px 12px;font-size:.75rem;font-weight:700;letter-spacing:1px;
+}
+.mode-card.m-lives .mc-tag{background:rgba(255,71,87,.12);border-color:rgba(255,71,87,.3);color:var(--red)}
+
+/* ══════════════════════════════
+   SCREEN: NAME
+══════════════════════════════ */
+#s-name{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px;
+}
+.name-box{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:24px;padding:48px 40px;
+  max-width:460px;width:100%;text-align:center;
+}
+.name-box .nb-icon{font-size:3rem;margin-bottom:16px}
+.name-box h2{font-family:'Bebas Neue';font-size:2rem;letter-spacing:2px;margin-bottom:8px}
+.name-box p{color:var(--muted);font-size:.88rem;line-height:1.6;margin-bottom:28px}
+.name-input{
+  width:100%;background:var(--s2);
+  border:1.5px solid var(--border);border-radius:12px;
+  padding:14px 18px;font-size:.95rem;
+  color:var(--white);font-family:'Cabinet Grotesk',sans-serif;
+  outline:none;transition:border-color .2s;margin-bottom:8px;
+}
+.name-input:focus{border-color:var(--teal)}
+.mode-indicator{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px;background:var(--s2);border-radius:10px;
+  margin-bottom:20px;font-size:.82rem;color:var(--muted);
+}
+.mode-indicator strong{color:var(--white)}
+
+/* ══════════════════════════════
+   BUTTONS
+══════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:'Cabinet Grotesk',sans-serif;font-weight:800;
+  border:none;cursor:pointer;border-radius:12px;
+  transition:transform .15s,background .2s,opacity .2s;
+  text-decoration:none;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+.btn-primary{background:var(--teal);color:#000;font-size:.95rem;padding:14px 32px}
+.btn-primary:hover{background:var(--teal2)}
+.btn-outline{
+  background:transparent;color:var(--white);
+  border:1.5px solid var(--border);font-size:.88rem;padding:12px 22px;
+}
+.btn-outline:hover{border-color:var(--teal);color:var(--teal)}
+.btn-lg{font-size:1.05rem;padding:16px 40px;border-radius:14px}
+.btn-block{width:100%;justify-content:center}
+
+/* ══════════════════════════════
+   SCREEN: QUIZ
+══════════════════════════════ */
+#s-quiz{max-width:780px;margin:0 auto;padding:28px 20px 100px}
+
+/* TOP BAR */
+.quiz-topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;margin-bottom:20px;flex-wrap:wrap;
+}
+.player-chip{
+  display:flex;align-items:center;gap:8px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:99px;padding:6px 16px 6px 6px;
+}
+.p-avatar{
+  width:30px;height:30px;border-radius:50%;
+  background:var(--teal);color:#000;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:.75rem;font-family:'Bebas Neue';
+}
+.p-name{font-size:.85rem;font-weight:700}
+
+.hud-right{display:flex;align-items:center;gap:10px}
+
+/* TIMER CLOCK */
+.timer-wrap{position:relative;width:52px;height:52px;flex-shrink:0}
+.timer-wrap svg{transform:rotate(-90deg)}
+.t-bg{fill:none;stroke:var(--border);stroke-width:5}
+.t-fg{
+  fill:none;stroke:var(--timer-c);stroke-width:5;
+  stroke-dasharray:132;stroke-dashoffset:0;
+  stroke-linecap:round;
+  transition:stroke-dashoffset 1s linear,stroke .4s;
+}
+.t-label{
+  position:absolute;inset:0;display:flex;
+  align-items:center;justify-content:center;
+  font-family:'Bebas Neue';font-size:1rem;letter-spacing:1px;
+}
+
+/* LIVES */
+.lives-display{
+  display:flex;gap:4px;align-items:center;
+}
+.life-heart{font-size:1.3rem;transition:transform .3s,opacity .3s}
+.life-heart.lost{opacity:.2;transform:scale(.7);filter:grayscale(1)}
+
+/* SCORE CHIP */
+.score-chip{
+  background:rgba(245,197,24,.12);border:1px solid rgba(245,197,24,.3);
+  color:var(--gold);border-radius:99px;padding:4px 14px;
+  font-size:.82rem;font-weight:800;
+}
+
+/* PROGRESS */
+.prog-wrap{height:3px;background:var(--border);border-radius:99px;margin-bottom:32px;overflow:hidden}
+.prog-fill{height:100%;background:var(--teal);border-radius:99px;transition:width .5s ease}
+
+/* Q CONTENT */
+.q-meta{
+  display:flex;align-items:center;gap:12px;margin-bottom:14px;
+}
+.q-num{
+  font-family:'Bebas Neue';font-size:.85rem;letter-spacing:2px;color:var(--teal);
+}
+.q-diff{
+  font-size:.7rem;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;border-radius:99px;padding:2px 10px;
+}
+.diff-med{background:rgba(245,197,24,.15);color:var(--gold);border:1px solid rgba(245,197,24,.3)}
+.diff-hard{background:rgba(255,71,87,.15);color:var(--red);border:1px solid rgba(255,71,87,.3)}
+.diff-expert{background:rgba(160,50,255,.2);color:#c084fc;border:1px solid rgba(160,50,255,.3)}
+
+.q-text{
+  font-family:'Bebas Neue';
+  font-size:clamp(1.2rem,3.5vw,1.7rem);
+  letter-spacing:1px;line-height:1.25;
+  margin-bottom:28px;color:var(--white);
+}
+
+/* SOURCE TAG */
+.source-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(0,229,180,.07);border:1px solid rgba(0,229,180,.18);
+  color:rgba(0,229,180,.7);border-radius:6px;
+  padding:2px 10px;font-size:.72rem;letter-spacing:.5px;
+  margin-bottom:16px;
+}
+
+/* OPTIONS */
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+@media(max-width:520px){.opts{grid-template-columns:1fr}}
+
+.opt{
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:14px;padding:16px 18px;
+  color:var(--white);font-family:'Cabinet Grotesk',sans-serif;
+  font-size:.88rem;line-height:1.5;
+  cursor:pointer;text-align:left;
+  transition:border-color .2s,background .2s,transform .15s;
+  display:flex;align-items:flex-start;gap:10px;
+}
+.opt:hover:not(:disabled){
+  border-color:var(--teal);background:rgba(0,229,180,.07);
+  transform:translateY(-2px);
+}
+.opt:disabled{cursor:default}
+.opt.correct{border-color:var(--green)!important;background:rgba(46,213,115,.1)!important;color:var(--green)}
+.opt.wrong{border-color:var(--red)!important;background:rgba(255,71,87,.1)!important;color:var(--red)}
+
+.opt-key{
+  min-width:24px;height:24px;border-radius:6px;
+  background:var(--border);color:var(--muted);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:800;flex-shrink:0;
+  font-family:'Bebas Neue';letter-spacing:1px;margin-top:1px;
+}
+.opt.correct .opt-key{background:var(--green);color:#000}
+.opt.wrong .opt-key{background:var(--red);color:#fff}
+
+/* FEEDBACK */
+.fb{
+  border-radius:14px;padding:18px 22px;
+  margin-bottom:20px;display:none;
+  animation:fadeIn .3s ease;
+}
+.fb.correct-fb{
+  background:rgba(46,213,115,.08);border:1px solid rgba(46,213,115,.25);
+  color:#9df5c5;display:block;
+}
+.fb.wrong-fb{
+  background:rgba(255,71,87,.08);border:1px solid rgba(255,71,87,.25);
+  color:#ffb3bc;display:block;
+}
+.fb-head{font-weight:800;font-size:.92rem;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.fb-body{font-size:.85rem;line-height:1.7;opacity:.9}
+.fb-source{
+  font-size:.75rem;color:var(--muted);margin-top:8px;
+  font-style:italic;border-top:1px solid rgba(255,255,255,.06);
+  padding-top:8px;
+}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════
+   SCREEN: RESULT
+══════════════════════════════ */
+#s-result{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px;
+}
+.result-wrap{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:24px;padding:48px 36px;
+  max-width:520px;width:100%;text-align:center;
+}
+.res-emoji{font-size:4rem;margin-bottom:12px}
+.res-title{font-family:'Bebas Neue';font-size:2.4rem;letter-spacing:3px;margin-bottom:4px}
+.res-big{
+  font-family:'Bebas Neue';font-size:5rem;letter-spacing:2px;
+  color:var(--teal);line-height:1;margin:16px 0 4px;
+}
+.res-sub{color:var(--muted);font-size:.88rem;margin-bottom:20px}
+.res-stars{font-size:2.2rem;letter-spacing:6px;margin-bottom:20px}
+.res-msg{
+  background:var(--s2);border-radius:12px;
+  padding:16px 20px;font-size:.85rem;
+  color:#8ab0d0;line-height:1.7;margin-bottom:28px;text-align:left;
+}
+
+/* ANSWER KEY */
+.answer-key{
+  background:var(--s2);border-radius:14px;
+  overflow:hidden;margin-bottom:24px;text-align:left;
+}
+.ak-header{
+  padding:12px 18px;background:rgba(0,229,180,.08);
+  border-bottom:1px solid var(--border);
+  font-size:.8rem;font-weight:800;letter-spacing:1px;
+  text-transform:uppercase;color:var(--teal);
+}
+.ak-row{
+  display:grid;grid-template-columns:28px 1fr 24px;
+  gap:8px;align-items:center;
+  padding:8px 18px;border-bottom:1px solid rgba(255,255,255,.04);
+  font-size:.8rem;
+}
+.ak-row:last-child{border-bottom:none}
+.ak-n{color:var(--muted);font-weight:700;font-family:'Bebas Neue';font-size:.9rem}
+.ak-text{color:#a0b8d0;line-height:1.4}
+.ak-icon{text-align:center;font-size:.9rem}
+
+/* ══════════════════════════════
+   SCREEN: LEADERBOARD
+══════════════════════════════ */
+#s-lb{max-width:760px;margin:0 auto;padding:48px 24px 100px}
+.lb-head-row{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:32px;gap:12px;flex-wrap:wrap}
+.lb-head-row h2{font-family:'Bebas Neue';font-size:2.4rem;letter-spacing:3px}
+.lb-head-row p{color:var(--muted);font-size:.85rem;margin-top:4px}
+
+.lb-table{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;overflow:hidden;margin-bottom:28px;
+}
+.lb-th{
+  display:grid;grid-template-columns:44px 1fr 80px 80px 70px;
+  padding:12px 20px;background:var(--s2);
+  border-bottom:1px solid var(--border);
+  font-size:.7rem;font-weight:800;letter-spacing:2px;
+  text-transform:uppercase;color:var(--muted);gap:8px;
+}
+.lb-th span:nth-child(3),
+.lb-th span:nth-child(4),
+.lb-th span:nth-child(5){text-align:center}
+
+.lb-row{
+  display:grid;grid-template-columns:44px 1fr 80px 80px 70px;
+  padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.04);
+  align-items:center;gap:8px;
+  transition:background .2s;
+  animation:rowIn .4s ease both;
+}
+.lb-row:last-child{border-bottom:none}
+.lb-row:hover{background:rgba(255,255,255,.02)}
+.lb-row.me{background:rgba(0,229,180,.05)}
+
+@keyframes rowIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+
+.rank-icon{
+  width:34px;height:34px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue';font-size:.95rem;
+}
+.rk1{background:rgba(245,197,24,.15);color:var(--gold)}
+.rk2{background:rgba(180,180,200,.12);color:#c8d0e0}
+.rk3{background:rgba(200,120,50,.15);color:#d4915a}
+.rkn{background:var(--border);color:var(--muted)}
+
+.lb-name-col .name{font-weight:800;font-size:.9rem}
+.lb-name-col .meta{font-size:.73rem;color:var(--muted);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+.mode-tag{
+  display:inline-flex;align-items:center;gap:3px;
+  background:var(--s2);border-radius:4px;padding:1px 6px;
+  font-size:.68rem;color:var(--muted);
+}
+
+.lb-pts{
+  text-align:center;font-family:'Bebas Neue';
+  font-size:1.2rem;letter-spacing:1px;
+}
+.c-perfect{color:var(--gold)} .c-high{color:var(--green)} .c-mid{color:var(--blue)} .c-low{color:var(--red)}
+
+.lb-acc{text-align:center}
+.acc-num{font-size:.9rem;font-weight:800}
+.acc-bar{height:3px;background:var(--border);border-radius:99px;margin-top:4px;overflow:hidden}
+.acc-fill{height:100%;border-radius:99px}
+
+.lb-mode{text-align:center}
+.mode-pill{
+  font-size:.7rem;font-weight:700;border-radius:99px;
+  padding:3px 10px;letter-spacing:.5px;
+}
+.mp-timer{background:rgba(0,229,180,.12);color:var(--teal);border:1px solid rgba(0,229,180,.25)}
+.mp-lives{background:rgba(255,71,87,.12);color:var(--red);border:1px solid rgba(255,71,87,.25)}
+
+.lb-empty{
+  padding:60px 24px;text-align:center;color:var(--muted);
+  font-size:.9rem;line-height:1.6;
+}
+
+/* NAV */
+.nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(7,9,15,.92);backdrop-filter:blur(16px);
+  border-top:1px solid var(--border);
+  display:flex;justify-content:center;gap:8px;
+  padding:10px 16px 12px;z-index:100;
+}
+.nav-btn{
+  background:var(--s2);border:1px solid var(--border);
+  color:var(--muted);border-radius:10px;
+  padding:8px 20px;
+  font-family:'Cabinet Grotesk',sans-serif;
+  font-size:.8rem;font-weight:800;
+  cursor:pointer;transition:all .2s;letter-spacing:.5px;
+}
+.nav-btn:hover,.nav-btn.active{
+  background:var(--teal);color:#000;border-color:var(--teal);
+}
+
+/* TOAST */
+.toast{
+  position:fixed;top:18px;right:18px;
+  background:var(--card);border:1px solid var(--teal);
+  border-radius:12px;padding:12px 20px;
+  font-size:.85rem;font-weight:700;color:var(--teal);
+  z-index:999;transform:translateX(130%);
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.toast.show{transform:translateX(0)}
+
+/* SHAKE */
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-6px)}
+  80%{transform:translateX(6px)}
+}
+.shake{animation:shake .4s ease}
+
+/* PULSE */
+@keyframes heartbeat{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.heartbeat{animation:heartbeat .3s ease}
+
+/* CONFETTI */
+@keyframes cffall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="go('lesson')">📖 Lección</button>
+  <button class="nav-btn" onclick="go('mode')">🎮 Jugar</button>
+  <button class="nav-btn" onclick="go('lb')">🏆 Ranking</button>
+</nav>
+
+<!-- ══════════════════════════════
+     SCREEN: LESSON
+══════════════════════════════ -->
+<section class="screen active" id="s-lesson">
+  <div class="top-badge">📄 Werner & Smith · Development and Psychopathology · 1993</div>
+  <h1 class="hero-title">RIESGO, RESILIENCIA<br><em>Y RECUPERACIÓN</em></h1>
+  <p class="hero-sub">Perspectivas del Estudio Longitudinal de Kauai — Emmy E. Werner, Universidad de California, Davis (1993). Basado en el artículo original.</p>
+
+  <!-- SECTION 1 -->
+  <div class="lesson-section">
+    <div class="ls-label">El estudio</div>
+    <div class="lesson-cards">
+      <div class="lc">
+        <div class="lc-accent"></div>
+        <div class="lc-icon">🌺</div>
+        <h3>¿Qué es el Estudio de Kauai?</h3>
+        <p>Iniciado en 1955, siguió a todos los bebés nacidos ese año en la isla hawaiana de Kauai. Sus objetivos fueron: (a) documentar el curso de todos los embarazos hasta la adultez, y (b) evaluar las consecuencias a largo plazo de las condiciones adversas sobre el desarrollo.</p>
+        <div class="stat-grid">
+          <div class="stat-item"><div class="stat-num">698</div><div class="stat-desc">bebés nacidos en 1955 en Kauai</div></div>
+          <div class="stat-item"><div class="stat-num">54%</div><div class="stat-desc">de la cohorte creció en la pobreza</div></div>
+          <div class="stat-item"><div class="stat-num">5</div><div class="stat-desc">seguimientos: 1, 2, 10, 18 y 32 años</div></div>
+        </div>
+      </div>
+      <div class="lc gold">
+        <div class="lc-accent"></div>
+        <div class="lc-icon">⚠️</div>
+        <h3>Niños de alto riesgo (n = 201)</h3>
+        <p>Aproximadamente un tercio fue clasificado como alto riesgo: nacidos en pobreza, con estrés perinatal moderado a severo, y en familias con discordia crónica, alcoholismo parental o enfermedad mental.</p>
+        <div class="stat-grid">
+          <div class="stat-item"><div class="stat-num">2/3</div><div class="stat-desc">desarrollaron problemas graves (aprendizaje, delincuencia, salud mental) antes de los 18</div></div>
+          <div class="stat-item"><div class="stat-num">72</div><div class="stat-desc">niños (1/3) se convirtieron en adultos competentes y afectuosos</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="lesson-section">
+    <div class="ls-label">Factores protectores identificados</div>
+    <p style="color:var(--muted);font-size:.88rem;margin-bottom:16px;line-height:1.7">Werner identificó cuatro <em>clusters</em> de factores que, encadenados a lo largo del tiempo, predijeron el éxito adulto en los niños de alto riesgo. Fueron identificados mediante análisis de senderos con variables latentes (Lohmoller, 1984).</p>
+    <div class="cluster-grid">
+      <div class="cluster"><div class="cluster-num">01</div><p><strong>Temperamento</strong> — Características que suscitan respuestas positivas de cuidadores y extraños desde la infancia.</p></div>
+      <div class="cluster"><div class="cluster-num">02</div><p><strong>Habilidades y valores</strong> — Uso eficiente de capacidades, planes vocacionales realistas, responsabilidades domésticas.</p></div>
+      <div class="cluster"><div class="cluster-num">03</div><p><strong>Padres competentes</strong> — Estilos de crianza que reflejan competencia y fomentan la autoestima del hijo.</p></div>
+      <div class="cluster"><div class="cluster-num">04</div><p><strong>Adultos de apoyo externos</strong> — Abuelos, mentores, maestros, líderes juveniles que actúan como garantes del futuro.</p></div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="lesson-section">
+    <div class="ls-label">Seguimiento en la adultez (32 años)</div>
+    <div class="lesson-cards">
+      <div class="lc green">
+        <div class="lc-accent"></div>
+        <div class="lc-icon">💪</div>
+        <h3>Niños resilientes a los 32 años</h3>
+        <p>Sus logros educativos y vocacionales igualaron a los de niños de bajo riesgo criados en entornos estables. Las cualidades compartidas fueron: competencia personal, apoyo del cónyuge y fe. Un 55% de hombres y 41% de mujeres reportaron problemas de salud relacionados con estrés (migrañas, dolores de espalda) como "precio" de su resiliencia.</p>
+      </div>
+      <div class="lc red">
+        <div class="lc-accent"></div>
+        <div class="lc-icon">🔄</div>
+        <h3>Recuperación tardía: puntos de inflexión</h3>
+        <p>Las fuerzas más potentes para el cambio positivo en la adultez fueron: (1) educación en colegios comunitarios, (2) habilidades adquiridas en el servicio militar, y (3) participación activa en comunidades religiosas. No solo los eventos tempranos determinan el resultado adulto.</p>
+      </div>
+      <div class="lc blue">
+        <div class="lc-accent"></div>
+        <div class="lc-icon">⚖️</div>
+        <h3>Diferencias por género</h3>
+        <p>Factores <strong>internos</strong> (autoestima, locus de control interno, habilidades cognitivas) protegieron más a las <em>mujeres</em>. Factores <strong>externos</strong> (apoyo familiar, mentores, estructura en el hogar, educación materna) protegieron más a los <em>hombres</em>.</p>
+      </div>
+      <div class="lc orange">
+        <div class="lc-accent"></div>
+        <div class="lc-icon">📊</div>
+        <h3>Delincuentes y madres adolescentes</h3>
+        <p>3/4 de varones delincuentes y 90% de mujeres delincuentes evitaron arrestos en adultez. El 60% de madres adolescentes continuó con más educación. Ambos grupos refutan estereotipos de trayectorias fijas e inmutables.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="lesson-section">
+    <div class="ls-label">Advertencia final del artículo (Closing Caveat)</div>
+    <div class="quote-block">
+      "La mayoría de los estudios sobre riesgo y resiliencia se han centrado en niños de sociedades urbanas e industrializadas. La investigación futura debe examinar otros 'nichos de desarrollo' que caracterizan la interfaz del niño y la cultura en Asia, el Medio Oriente, África y América Latina."
+      <div class="quote-src">— Werner, E.E. (1993). Risk, resilience, and recovery. <em>Development and Psychopathology, 5</em>, 503–515.</div>
+    </div>
+    <div class="lc" style="margin-top:16px">
+      <div class="lc-accent"></div>
+      <div class="lc-icon">🧬</div>
+      <h3>Marco teórico aplicado</h3>
+      <p>Los datos apoyan el <strong>modelo estructural-conductual de Horowitz (1987)</strong> y la teoría de efectos genotipo→ambiente de <strong>Scarr y McCartney (1983)</strong>: a lo largo del tiempo hubo un desplazamiento de efectos ambientales <em>pasivos</em> a <em>activos</em>, ya que los jóvenes resilientes "eligieron sus propios nichos" al abandonar entornos adversos.</p>
+    </div>
+  </div>
+
+  <div class="cta-block">
+    <h3>¿LISTO PARA DEMOSTRAR LO QUE APRENDISTE?</h3>
+    <p>15 preguntas de alto nivel de dificultad basadas directamente en el artículo de Werner (1993)</p>
+    <div class="cta-row">
+      <button class="btn btn-primary btn-lg" onclick="go('mode')">🎮 Elegir modo de juego</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     SCREEN: MODE SELECT
+══════════════════════════════ -->
+<section class="screen" id="s-mode">
+  <div class="mode-wrap">
+    <h2>ELIGE TU MODO</h2>
+    <p class="ms">Dos modos de juego con el mismo banco de 15 preguntas de alta dificultad</p>
+
+    <div class="mode-cards">
+      <div class="mode-card" id="mc-timer" onclick="selectMode('timer')">
+        <div class="mc-icon">⏱️</div>
+        <h3>CONTRARRELOJ</h3>
+        <p>45 segundos por pregunta. Responde más rápido para ganar más puntos. El tiempo restante multiplica tu puntaje base.</p>
+        <div class="mc-tag">45 SEG / PREGUNTA</div>
+      </div>
+      <div class="mode-card m-lives" id="mc-lives" onclick="selectMode('lives')">
+        <div class="mc-icon">❤️</div>
+        <h3>5 VIDAS</h3>
+        <p>Sin límite de tiempo para pensar, pero solo tienes 5 oportunidades. Cada error te cuesta una vida. Piérdes las 5 y termina el juego.</p>
+        <div class="mc-tag" style="background:rgba(255,71,87,.12);border-color:rgba(255,71,87,.3);color:var(--red)">5 VIDAS · SIN TIEMPO</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-lg" id="confirm-mode-btn" onclick="go('name')" style="opacity:.4;pointer-events:none">
+      Continuar →
+    </button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     SCREEN: NAME
+══════════════════════════════ -->
+<section class="screen" id="s-name">
+  <div id="name-center" style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px">
+    <div class="name-box">
+      <div class="nb-icon">🎓</div>
+      <h2>¿CÓMO TE LLAMAS?</h2>
+      <p>Tu nombre aparecerá en el ranking visible para toda la clase con tu puntaje y modo elegido.</p>
+      <div class="mode-indicator" id="mode-ind">
+        <span>Modo seleccionado:</span> <strong id="mode-ind-label">—</strong>
+      </div>
+      <input class="name-input" id="pname" type="text" placeholder="Nombre completo" maxlength="40"
+        onkeydown="if(event.key==='Enter')beginQuiz()">
+      <button class="btn btn-primary btn-block" style="margin-top:8px" onclick="beginQuiz()">
+        🚀 ¡Empezar quiz!
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     SCREEN: QUIZ
+══════════════════════════════ -->
+<section class="screen" id="s-quiz">
+  <!-- TOP BAR -->
+  <div class="quiz-topbar">
+    <div class="player-chip">
+      <div class="p-avatar" id="q-av">?</div>
+      <span class="p-name" id="q-pname">—</span>
+    </div>
+    <div class="hud-right">
+      <!-- Timer mode -->
+      <div id="hud-timer" style="display:none">
+        <div class="timer-wrap">
+          <svg viewBox="0 0 44 44" width="52" height="52">
+            <circle class="t-bg" cx="22" cy="22" r="19"/>
+            <circle class="t-fg" id="t-fg" cx="22" cy="22" r="19"/>
+          </svg>
+          <div class="t-label" id="t-label">45</div>
+        </div>
+      </div>
+      <!-- Lives mode -->
+      <div id="hud-lives" style="display:none">
+        <div class="lives-display" id="lives-display"></div>
+      </div>
+      <div class="score-chip" id="score-chip">⭐ 0 pts</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="prog-wrap"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+
+  <!-- QUESTION -->
+  <div class="q-meta">
+    <div class="q-num" id="q-num">PREGUNTA 1 / 15</div>
+    <div class="q-diff" id="q-diff"></div>
+  </div>
+  <div class="source-tag">📄 Fuente: Werner (1993) — Development and Psychopathology, 5, 503–515</div>
+  <div class="q-text" id="q-text">Cargando...</div>
+
+  <div class="opts" id="opts"></div>
+
+  <div class="fb" id="fb">
+    <div class="fb-head" id="fb-head"></div>
+    <div class="fb-body" id="fb-body"></div>
+    <div class="fb-source" id="fb-src"></div>
+  </div>
+
+  <button class="btn btn-primary" id="next-btn" onclick="nextQ()" style="display:none">
+    Siguiente → 
+  </button>
+</section>
+
+<!-- ══════════════════════════════
+     SCREEN: RESULT
+══════════════════════════════ -->
+<section class="screen" id="s-result">
+  <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px">
+    <div class="result-wrap">
+      <div class="res-emoji" id="r-em">🌺</div>
+      <div class="res-title" id="r-title">RESULTADO</div>
+      <div class="res-big" id="r-big">0/15</div>
+      <div class="res-sub" id="r-sub">0 puntos</div>
+      <div class="res-stars" id="r-stars"></div>
+      <div class="res-msg" id="r-msg"></div>
+
+      <!-- Answer key -->
+      <div class="answer-key" id="ak-wrap">
+        <div class="ak-header">📋 Tabla de Respuestas Correctas</div>
+        <div id="ak-rows"></div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="go('lb')">🏆 Ver Ranking</button>
+        <button class="btn btn-outline" onclick="go('mode')">🔄 Jugar de nuevo</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     SCREEN: LEADERBOARD
+══════════════════════════════ -->
+<section class="screen" id="s-lb">
+  <div class="lb-head-row">
+    <div>
+      <h2>🏆 RANKING</h2>
+      <p>Resultados de todos los estudiantes — guardados localmente</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-outline" onclick="go('mode')">🎮 Jugar</button>
+      <button class="btn btn-outline" onclick="clearLB()" style="border-color:rgba(255,71,87,.4);color:var(--red)">🗑 Borrar</button>
+    </div>
+  </div>
+
+  <div class="lb-table">
+    <div class="lb-th">
+      <span>#</span><span>Estudiante</span>
+      <span style="text-align:center">Puntos</span>
+      <span style="text-align:center">Aciertos</span>
+      <span style="text-align:center">Modo</span>
+    </div>
+    <div id="lb-body"><div class="lb-empty">📭 Sin resultados todavía. ¡Sé el primero!</div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ SCRIPT ══════════════════════════ -->
+<script>
+// ──────────────── PREGUNTAS (15, alta dificultad) ────────────────
+const QS = [
+  {
+    q: "El artículo de Werner (1993) describe que los niños resilientes a los 32 años mostraron ciertos 'costos' de su resiliencia. ¿Cuál de estas afirmaciones refleja con mayor precisión ese hallazgo?",
+    opts:[
+      "No mostraron ningún costo psicológico ni físico; su adaptación fue plena en todas las áreas",
+      "Un 55% de los hombres y un 41% de las mujeres reportaron problemas de salud relacionados con el estrés (migrañas, dolores de espalda) y cierta distancia emocional en sus relaciones",
+      "La mayoría desarrolló depresión crónica como consecuencia de haber reprimido sus emociones durante la infancia",
+      "El costo principal fue el fracaso matrimonial: menos del 30% logró mantener una relación estable"
+    ],
+    correct:1,
+    diff:'hard',
+    fb:"Werner señala explícitamente que los resilientes 'pagaron un precio' que varió desde problemas de salud relacionados con el estrés —reportados por el 55% de los hombres y el 41% de las mujeres— hasta 'cierta distancia emocional' en sus relaciones interpersonales. Era el costo del esfuerzo continuo de desvincularse de entornos familiares problemáticos.",
+    src:"Werner (1993), p. 506 — Sección 'The resilient children in their mid-30s'"
+  },
+  {
+    q: "Werner aplica la teoría del genotipo→ambiente de Scarr y McCartney (1983) a sus datos. ¿Qué tipo de efecto genotipo→ambiente predominó con el tiempo en los jóvenes resilientes del estudio y por qué?",
+    opts:[
+      "El efecto pasivo predominó, porque los padres biológicos continuaron controlando el entorno de sus hijos hasta la adultez",
+      "El efecto evocativo desapareció al llegar a la adultez, siendo reemplazado por el efecto pasivo",
+      "Hubo un desplazamiento del efecto pasivo al activo: los jóvenes salieron de entornos estresantes y eligieron activamente entornos más compatibles ('picked their own niches')",
+      "El efecto activo predominó desde la infancia porque los niños resilientes siempre controlaron sus entornos de forma consciente"
+    ],
+    correct:2,
+    diff:'expert',
+    fb:"Werner indica que 'over time there was a shift from passive to active genotype→environment effects' al dejar los jóvenes sus hogares estresantes para buscar entornos extrafamiliares (escuela, trabajo, ejército) más estimulantes. El efecto evocativo (suscitar respuestas diferenciales de otros basadas en temperamento e inteligencia) persistió a lo largo de todas las etapas.",
+    src:"Werner (1993), pp. 510–511 — Sección 'Implications for Developmental Theory'"
+  },
+  {
+    q: "Según el análisis de senderos con variables latentes realizado por Werner, ¿qué predictores en la infancia temprana (0–2 años) diferenciaron mejor a los hombres de las mujeres en términos de adaptación adulta exitosa?",
+    opts:[
+      "Para ambos géneros, el número de hermanos fue el predictor más potente en la infancia temprana",
+      "Para los hombres, el nivel educativo de la madre, la proporción de interacciones maternas positivas y la estabilidad familiar (0–2 años) fueron mejores predictores; para las mujeres, un temperamento atractivo y sociable del bebé",
+      "Para las mujeres, la educación del padre fue el predictor más fuerte; para los hombres, el temperamento difícil actuó como predictor inverso",
+      "No hubo diferencias por género en los predictores de la infancia temprana; las diferencias aparecieron únicamente en la adolescencia"
+    ],
+    correct:1,
+    diff:'expert',
+    fb:"Werner describe con precisión que en la infancia, el nivel educativo de la madre, las interacciones maternas positivas observadas a los 2 años y la estabilidad familiar predijeron mejor el éxito adulto en hombres de alto riesgo. Las características conductuales del bebé de 1 año y el niño de 2 años (temperamento atractivo y sociable) predijeron mejor el éxito en mujeres de alto riesgo.",
+    src:"Werner (1993), p. 510 — Sección 'Individual dispositions versus outside sources of support'"
+  },
+  {
+    q: "El Cluster 4 de factores protectores identificados en el estudio incluye a adultos de apoyo que actúan como 'gatekeepers for the future'. Según Werner, ¿quiénes formaban parte de este grupo y qué función crítica tenían?",
+    opts:[
+      "Exclusivamente los progenitores biológicos que mantenían comunicación activa con sus hijos; su función era garantizar el cumplimiento de reglas del hogar",
+      "Psicólogos y trabajadores sociales asignados por programas estatales; su función era proveer terapia formal",
+      "Abuelos, mentores mayores, líderes juveniles y miembros de grupos religiosos; su función era fomentar la confianza y abrir oportunidades en transiciones vitales clave",
+      "Los compañeros de clase de los jóvenes; su función era proporcionar retroalimentación positiva sobre el rendimiento escolar"
+    ],
+    correct:2,
+    diff:'hard',
+    fb:"Werner especifica que el Cluster 4 consistía en 'supportive adults who fostered trust and acted as gatekeepers for the future', entre quienes estaban abuelos, mentores mayores (elder mentors), líderes juveniles y miembros de grupos religiosos. Su rol no era terapéutico formal, sino el de abrir oportunidades en transiciones críticas de la vida.",
+    src:"Werner (1993), p. 508 — Sección 'Links Between Protective Factors and Successful Adult Adaptation'"
+  },
+  {
+    q: "Werner describe que los hijos de progenitores con psicopatología crónica podían 'desengancharse' de la discordia en su hogar. ¿Cuál fue el mecanismo de protección específico que Werner identificó como responsable de este desenganche?",
+    opts:[
+      "La terapia cognitivo-conductual recibida en los primeros grados de la escuela primaria",
+      "El uso de estrategias de represión emocional y disociación adaptativa enseñadas por consejeros escolares",
+      "Pasar tiempo con adultos afectuosos fuera del círculo familiar, lo cual alteraba su exposición a las condiciones de riesgo en el hogar",
+      "La mudanza física a hogares de familiares lejanos durante la adolescencia, promovida por el Estado"
+    ],
+    correct:2,
+    diff:'hard',
+    fb:"Werner señala explícitamente: 'children of parents with chronic psychopathology could detach themselves from the discord in their household by spending time with caring adults outside the family circle. Both processes altered their exposure to the potent risk conditions in their homes.' Esto ilustra cómo el Cluster 4 opera mecanísticamente.",
+    src:"Werner (1993), p. 511 — Sección 'Implications for Social Action'"
+  },
+  {
+    q: "En el seguimiento a los 32 años, Werner encontró que la mayoría de los crímenes adultos en la cohorte fueron cometidos por un subgrupo muy específico de delincuentes juveniles. ¿Cuáles eran las características que los distinguían de los demás delincuentes?",
+    opts:[
+      "Eran jóvenes que habían sido colocados en hogares de acogida durante la adolescencia y no tenían contacto con su familia biológica",
+      "Eran hijas mujeres de padres alcohólicos; el género femenino combinado con alcoholismo parental fue el predictor más fuerte",
+      "Tenían un promedio de cuatro o más arrestos, su carrera delictiva había comenzado a principios de la adolescencia y habían sido considerados 'problemáticos' por padres y maestros desde los 10 años",
+      "Eran jóvenes sin ningún arresto juvenil pero que debutaron en el crimen tras el servicio militar"
+    ],
+    correct:2,
+    diff:'hard',
+    fb:"Werner es explícita: 'The majority of adult crimes...were committed by a small group of juvenile offenders with an average of four or more arrests whose delinquent career had begun in their early teens and who had been considered troublesome by both their parents and their teachers at age 10.' La precocidad y frecuencia del comportamiento problemático fue el factor diferenciador clave.",
+    src:"Werner (1993), p. 507 — Sección 'Delinquents with and without a record of adult crime'"
+  },
+  {
+    q: "Werner cita a Rutter (1987) para definir cuatro tipos de procesos de protección esenciales para cambiar trayectorias del riesgo a la adaptación. ¿Cuál de los siguientes NO es uno de los cuatro procesos que Rutter enumeró?",
+    opts:[
+      "Procesos que reducen el impacto del riesgo",
+      "Procesos que promueven la autoestima y la autoeficacia",
+      "Procesos que garantizan el acceso a medicación psiquiátrica preventiva",
+      "Procesos que abren oportunidades"
+    ],
+    correct:2,
+    diff:'expert',
+    fb:"Rutter (1987, citado por Werner) enumeró: (a) los que reducen el impacto del riesgo, (b) los que reducen la probabilidad de reacciones en cadena negativas, (c) los que promueven la autoestima y la autoeficacia, y (d) los que abren oportunidades. La medicación psiquiátrica preventiva no forma parte de este marco —Werner enfatiza los procesos informales y comunitarios.",
+    src:"Werner (1993), p. 511 — Sección 'Implications for Social Action' (Rutter, 1987)"
+  },
+  {
+    q: "Werner analiza el concepto de 'required helpfulness' (Rachman, 1979) como elemento de intervención. ¿En qué contexto específico emergió este concepto en el estudio de Kauai y cómo se relaciona con el desarrollo de autoestima?",
+    opts:[
+      "Surgió de los programas de voluntariado formal organizados por las escuelas; la autoestima aumentaba al recibir reconocimiento público",
+      "En algún punto de la infancia media o adolescencia, los jóvenes fueron requeridos a realizar tareas socialmente deseables para proteger a otros de su familia o comunidad; esto promovió autoestima y autoeficacia de forma orgánica",
+      "Emergió exclusivamente en el contexto religioso: las tareas de servicio en la iglesia generaban sentido de misión",
+      "Fue un programa de intervención formal diseñado por Werner y Smith para las familias de Kauai durante el estudio"
+    ],
+    correct:1,
+    diff:'expert',
+    fb:"Werner describe cómo 'at some point in their young lives, usually in middle childhood and adolescence, the youngsters who grew into resilient adults were required to carry out some socially desirable task to prevent others in their family, neighborhood, or community from experiencing distress.' Este 'required helpfulness' fue orgánico, no programático, y generó autoestima al dar a los jóvenes un rol de valor real.",
+    src:"Werner (1993), p. 511 — Sección 'Implications for Social Action' (Rachman, 1979)"
+  },
+  {
+    q: "¿Por qué Werner concluye que la competencia lectora a los 10 años es uno de los predictores más potentes de adaptación adulta exitosa, y qué tipo de intervención señala como efectiva?",
+    opts:[
+      "Porque la lectura desarrolla inteligencia emocional y autoconciencia; Werner recomienda talleres de escritura creativa",
+      "Porque más del 50% de los fracasos escolares a los 10 años se debían a deficiencias en lectura, y los niños se beneficiaron sustancialmente de trabajo remedial a corto plazo en los tres primeros grados, realizado por auxiliares docentes y tutores entre pares",
+      "Porque la lectura es el indicador más fuerte del cociente intelectual hereditario; la intervención debe enfocarse en estimulación temprana prenatal",
+      "Porque la lectura a los 10 años correlaciona con el nivel socioeconómico familiar, por lo que la intervención debe ser económica, no educativa"
+    ],
+    correct:1,
+    diff:'hard',
+    fb:"Werner afirma: 'More than half of the school failures detected at age 10 were due to deficiencies in that skill. Such children profited substantially from short-term remedial work in the first three grades by teachers' aides and peer tutors at a critical period when achievement motivation is stabilized.' Es una intervención breve, de bajo costo y altamente eficaz en un momento crítico del desarrollo.",
+    src:"Werner (1993), p. 511 — Sección 'Implications for Social Action'"
+  },
+  {
+    q: "El modelo de Horowitz (1987) fue uno de los marcos teóricos empleados por Werner. ¿Qué aspecto específico de los datos de Kauai encaja con el postulado central de este modelo estructural-conductual?",
+    opts:[
+      "Que el nivel socioeconómico es la variable más determinante del desarrollo y no puede ser modificada por intervenciones psicológicas",
+      "Que la resiliencia o vulnerabilidad son rasgos fijos desde el nacimiento, y el entorno solo modifica su expresión superficial",
+      "Que se observó un rango de resiliencia/vulnerabilidad relativa que cambió en distintos momentos del ciclo vital (inicio de adolescencia, transición a adultez), determinado por la transacción entre características constitucionales del individuo y aspectos del entorno de crianza",
+      "Que el temperamento al nacer predice perfectamente el resultado adulto sin intervención de factores ambientales"
+    ],
+    correct:2,
+    diff:'expert',
+    fb:"Werner explica que el modelo de Horowitz asume que la adecuación del desarrollo es resultado de factores orgánicos actuando en relación con aspectos del entorno que facilitan o impiden el desarrollo. En los datos de Kauai esto se reflejó en cómo la resiliencia o vulnerabilidad cambiaron en diferentes puntos del ciclo vital: 'The transaction across time between constitutional characteristics of the individual and aspects of the caregiving environment...determined the quality of adult adaptation.'",
+    src:"Werner (1993), p. 510 — Sección 'Implications for Developmental Theory'"
+  },
+  {
+    q: "Werner advierte sobre los límites de generalización del estudio. En su 'Closing Caveat', menciona a jóvenes inmigrantes específicos cuya resiliencia fue 'severely tested'. ¿Cuáles son los grupos que menciona como ejemplos y por qué los cita?",
+    opts:[
+      "Jóvenes afroamericanos de Chicago y puertorriqueños de Nueva York; para mostrar que la resiliencia es imposible en contextos de discriminación racial",
+      "Hijos de refugiados vietnamitas que sobrevivieron el mar, Highland Hmong y adolescentes camboyanos que presenciaron el régimen de Pol Pot; para señalar que existen contextos de adversidad extrema fuera del foco occidental de la investigación sobre resiliencia",
+      "Adolescentes mexicanos migrantes en California; para demostrar que el idioma es la mayor barrera a la resiliencia",
+      "Jóvenes de El Salvador únicamente; para proponer replicar el estudio de Kauai en Centroamérica"
+    ],
+    correct:1,
+    diff:'expert',
+    fb:"Werner menciona explícitamente a 'children of the Vietnamese boat people who survived pillage and rape at sea, the Highland Hmong, and Cambodian teenagers who witnessed the holocaust of the Pol Pot regime.' Los cita no para generalizar hallazgos sino para señalar que hay contextos de adversidad extrema y culturas no occidentales que la investigación sobre resiliencia ha ignorado y de quienes 'there is a lot we can learn.'",
+    src:"Werner (1993), pp. 513–514 — Sección 'A Closing Caveat is in Order!'"
+  },
+  {
+    q: "¿Cuál fue el resultado sobre los jóvenes 'troubled' (con problemas graves de salud mental en la adolescencia) en su seguimiento a los 32 años, y qué factor de recuperación fue el más frecuentemente citado?",
+    opts:[
+      "La mayoría seguía con problemas crónicos y en tratamiento; el factor más frecuente fue la medicación psiquiátrica sostenida",
+      "Solo una minoría aún necesitaba servicios de salud mental a los 32 años; el factor de apoyo más frecuentemente mencionado fue un cónyuge comprensivo o amigo cercano",
+      "Todos habían logrado plena recuperación gracias a programas de intervención escolar temprana",
+      "Los hombres y mujeres tuvieron resultados idénticos; el género no fue variable moderadora en la recuperación"
+    ],
+    correct:1,
+    diff:'hard',
+    fb:"Werner señala que solo una minoría seguía necesitando servicios de salud mental a los 32 años. Además: 'By far the most frequently mentioned source of support in times of difficulties was a supportive spouse or close friend.' Casi la mitad de los hombres y dos tercios de las mujeres con problemas de salud mental señalaron a sus cónyuges como principal fuente de apoyo. Los hombres con problemas tuvieron peores resultados que las mujeres.",
+    src:"Werner (1993), pp. 507–508 — Sección 'Troubled youth in their early 30s'"
+  },
+  {
+    q: "Werner argumenta que la investigación sobre resiliencia ha ignorado contextos culturales no occidentales. Según el artículo, ¿qué dimensiones varían significativamente en las culturas donde hoy nace la mayoría de los niños del mundo?",
+    opts:[
+      "Solo el acceso a tecnología y servicios de salud; los factores de riesgo psicológico son universales y culturalmente invariables",
+      "Los entornos físicos y sociales, las costumbres de cuidado infantil y socialización de género, y las creencias de los cuidadores sobre la naturaleza y necesidades de los niños",
+      "Únicamente el nivel de pobreza económica; los factores de protección como el vínculo afectivo son culturalmente idénticos en todo el mundo",
+      "Solo el sistema educativo formal; todos los demás factores de riesgo y protección son transculturales"
+    ],
+    correct:1,
+    diff:'expert',
+    fb:"Werner especifica: 'The physical and social settings in which children live, the customs of childcare and sex role socialization, and caregivers' beliefs concerning the nature and needs of children vary greatly in those parts of the world where five out of every six children are born today.' Además advierte que algunos atributos protectores pueden promover adaptación en un contexto y tener efectos negativos en otro.",
+    src:"Werner (1993), p. 514 — Sección 'A Closing Caveat is in Order!'"
+  },
+  {
+    q: "Werner describe cómo el temperamento del bebé genera un ciclo de continuidad interaccional a lo largo del tiempo. ¿Cuál es la cadena causal correcta que Werner identifica desde el temperamento 'fácil' hasta la adaptación adulta?",
+    opts:[
+      "Temperamento fácil → mayor apoyo social en adolescencia → mayor autoestima a los 18 → menos angustia o mayor apoyo social en adultez",
+      "Temperamento fácil → inscripción en programas formales de estimulación → mejor CI a los 10 años → éxito académico universitario",
+      "Temperamento fácil → menor pobreza familiar → mejores oportunidades educativas → éxito laboral en adultez",
+      "Temperamento fácil → menor número de hermanos → mayor atención parental exclusiva → autoeficacia en la adultez"
+    ],
+    correct:0,
+    diff:'expert',
+    fb:"Werner describe la cadena con precisión: bebés activos y sociables elicitaban más respuestas positivas de madres (1 año) y cuidadores alternos (2 años). En infancia media se apoyaban en mayor red de adultos. La competencia académica a los 10 años se vinculó con mayor autoeficacia a los 18. Y 'a greater sense of self-efficacy at age 18 was, in turn, linked to less distress and emotionality for the high-risk men at age 32 and generated a greater number of sources of emotional support for the high-risk women.'",
+    src:"Werner (1993), pp. 509–510 — Sección 'Links Between Protective Factors and Successful Adult Adaptation'"
+  },
+  {
+    q: "Werner concluye que 'la apertura de oportunidades en las transiciones vitales' fue determinante. ¿Qué frase del artículo resume mejor su posición sobre el peso de los eventos tempranos versus los tardíos en la determinación del resultado adulto?",
+    opts:[
+      "Los eventos de la primera infancia determinan de forma irreversible la trayectoria adulta; las intervenciones tardías tienen efecto marginal",
+      "Solo los eventos de la adolescencia importan; la infancia temprana no tiene valor predictivo estadístico en los modelos de senderos",
+      "Los hallazgos a los 32 años indican que los eventos tempranos en la vida de los niños y jóvenes de alto riesgo NO son los únicos que afectan su ajuste posterior; las transiciones en los 20s y 30s también generaron puntos de inflexión",
+      "Existe un período crítico exclusivo entre los 6 y 10 años; todo lo que ocurre antes o después tiene impacto negligible"
+    ],
+    correct:2,
+    diff:'hard',
+    fb:"Werner es contundente: 'Our findings at age 32 indicates that earlier events in the lives of high-risk children and youths are not the only ones to affect their later adjustment to the world of work, marriage, and parenthood.' Esto es una posición teórica importante: rechaza el determinismo de los primeros años y abre espacio a intervenciones en la adultez joven.",
+    src:"Werner (1993), p. 512 — Sección 'Implications for Social Action'"
+  }
+];
+
+// ──────────────── STATE ────────────────
+let mode='timer', playerName='', curQ=0, score=0, correct=0;
+let answered=false, timerInt=null, timeLeft=45, livesLeft=5;
+let userAnswers=[];
+
+const CIRC = 2*Math.PI*19; // 119.38
+
+// ──────────────── NAVIGATION ────────────────
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>{
+    b.classList.remove('active');
+    if(['lesson','mode','lb'][i]===id) b.classList.add('active');
+  });
+  if(id==='lb') renderLB();
+  window.scrollTo(0,0);
+}
+
+// ──────────────── MODE SELECT ────────────────
+function selectMode(m){
+  mode=m;
+  document.getElementById('mc-timer').classList.toggle('selected', m==='timer');
+  document.getElementById('mc-lives').classList.toggle('selected', m==='lives');
+  const btn=document.getElementById('confirm-mode-btn');
+  btn.style.opacity='1'; btn.style.pointerEvents='auto';
+  document.getElementById('mode-ind-label').textContent =
+    m==='timer'? '⏱️ Contrarreloj (45 seg/pregunta)' : '❤️ 5 Vidas (sin límite de tiempo)';
+}
+
+// ──────────────── START QUIZ ────────────────
+function beginQuiz(){
+  const inp=document.getElementById('pname');
+  playerName=inp.value.trim();
+  if(!playerName){showToast('Ingresa tu nombre 👆');inp.focus();return;}
+
+  curQ=0; score=0; correct=0; answered=false;
+  livesLeft=5; userAnswers=[];
+
+  document.getElementById('q-av').textContent=playerName[0].toUpperCase();
+  document.getElementById('q-pname').textContent=playerName;
+
+  // Show correct HUD
+  document.getElementById('hud-timer').style.display= mode==='timer'?'block':'none';
+  document.getElementById('hud-lives').style.display= mode==='lives'?'flex':'none';
+
+  if(mode==='lives') renderHearts();
+
+  go('quiz');
+  loadQ();
+}
+
+// ──────────────── LOAD QUESTION ────────────────
+function loadQ(){
+  const d=QS[curQ];
+  answered=false;
+  document.getElementById('next-btn').style.display='none';
+  document.getElementById('fb').className='fb';
+  document.getElementById('q-num').textContent=`PREGUNTA ${curQ+1} / ${QS.length}`;
+  document.getElementById('prog-fill').style.width=`${(curQ/QS.length)*100}%`;
+  document.getElementById('score-chip').textContent=`⭐ ${score} pts`;
+
+  // Difficulty badge
+  const dEl=document.getElementById('q-diff');
+  const dMap={med:['MEDIA','diff-med'],hard:['ALTA','diff-hard'],expert:['EXPERTO','diff-expert']};
+  dEl.textContent=dMap[d.diff][0];
+  dEl.className='q-diff '+dMap[d.diff][1];
+
+  document.getElementById('q-text').textContent=d.q;
+
+  // Options
+  const grid=document.getElementById('opts');
+  grid.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    const btn=document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML=`<span class="opt-key">${l}</span>${d.opts[i]}`;
+    btn.onclick=()=>selectAns(i);
+    grid.appendChild(btn);
+  });
+
+  // Timer
+  if(mode==='timer'){
+    clearInterval(timerInt);
+    timeLeft=45;
+    updateTimer(45);
+    document.getElementById('t-fg').style.stroke='var(--teal)';
+    timerInt=setInterval(()=>{
+      timeLeft--;
+      updateTimer(timeLeft);
+      if(timeLeft<=0){clearInterval(timerInt);if(!answered)timeout();}
+    },1000);
+  }
+}
+
+function updateTimer(t){
+  const fg=document.getElementById('t-fg');
+  const offset=CIRC-(t/45)*CIRC;
+  fg.style.strokeDashoffset=offset;
+  document.getElementById('t-label').textContent=t;
+  fg.style.stroke=t<=10?'var(--red)':t<=20?'var(--gold)':'var(--teal)';
+}
+
+function timeout(){
+  answered=true;
+  userAnswers.push({q:curQ,chosen:-1,correct:QS[curQ].correct});
+  const btns=document.querySelectorAll('.opt');
+  btns.forEach((b,i)=>{b.disabled=true;if(i===QS[curQ].correct)b.classList.add('correct');});
+  showFb(false,null);
+}
+
+function selectAns(idx){
+  if(answered)return;
+  answered=true;
+  if(mode==='timer')clearInterval(timerInt);
+
+  const d=QS[curQ];
+  const ok=idx===d.correct;
+  userAnswers.push({q:curQ,chosen:idx,correct:d.correct});
+
+  document.querySelectorAll('.opt').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===d.correct)b.classList.add('correct');
+    else if(i===idx&&!ok)b.classList.add('wrong');
+  });
+
+  if(ok){
+    const pts=mode==='timer'?Math.max(120,Math.round(80+timeLeft*4)):150;
+    score+=pts;correct++;
+    showFb(true,pts);
+  } else {
+    showFb(false,null);
+    if(mode==='lives'){
+      livesLeft--;
+      renderHearts();
+      const hw=document.getElementById('lives-display');
+      hw.classList.add('shake');
+      setTimeout(()=>hw.classList.remove('shake'),400);
+      if(livesLeft<=0){
+        setTimeout(()=>finish(),1200);
+        return;
+      }
+    }
+  }
+}
+
+function showFb(ok,pts){
+  const d=QS[curQ];
+  const fb=document.getElementById('fb');
+  fb.className='fb '+(ok?'correct-fb':'wrong-fb');
+  document.getElementById('fb-head').innerHTML=ok?`✅ ¡Correcto! +${pts} puntos`:`❌ Respuesta incorrecta`;
+  document.getElementById('fb-body').textContent=d.fb;
+  document.getElementById('fb-src').textContent='📄 '+d.src;
+  document.getElementById('next-btn').style.display='inline-flex';
+}
+
+function nextQ(){
+  curQ++;
+  if(curQ>=QS.length)finish();
+  else loadQ();
+}
+
+function renderHearts(){
+  const d=document.getElementById('lives-display');
+  d.innerHTML='';
+  for(let i=0;i<5;i++){
+    const h=document.createElement('span');
+    h.className='life-heart'+(i>=livesLeft?' lost':'');
+    h.textContent='❤️';
+    d.appendChild(h);
+  }
+}
+
+// ──────────────── FINISH ────────────────
+function finish(){
+  clearInterval(timerInt);
+  saveResult();
+
+  const pct=Math.round((correct/QS.length)*100);
+  let em,title,stars,msg;
+  if(pct===100){em='🌺';title='DOMINIO TOTAL';stars='⭐⭐⭐';}
+  else if(pct>=80){em='🏆';title='EXCELENTE';stars='⭐⭐⭐';}
+  else if(pct>=67){em='🎯';title='MUY BIEN';stars='⭐⭐';}
+  else if(pct>=47){em='📚';title='SUFICIENTE';stars='⭐';}
+  else{em='💪';title='A REFORZAR';stars='';}
+
+  const msgs={
+    100:'Respondiste todas las preguntas correctamente, incluyendo las de nivel experto. Dominas los matices del artículo de Werner (1993): los clusters de factores protectores, los marcos teóricos aplicados, las diferencias de género, y la advertencia sobre contextos culturales.',
+    80:'Excelente manejo del artículo. Revisa especialmente las preguntas sobre el modelo de Horowitz y la cadena causal del temperamento al resultado adulto.',
+    67:'Buen desempeño. Te recomendamos releer las secciones sobre implicaciones teóricas y la 'Closing Caveat' de Werner para reforzar los temas de nivel experto.',
+    47:'Vas por buen camino. Repasa las secciones de 'Links Between Protective Factors' e 'Implications for Social Action' del artículo original.',
+    0:'Te recomendamos releer el artículo completo con atención especial a los hallazgos cuantitativos y los marcos teóricos. ¡Inténtalo de nuevo!'
+  };
+  const mKey=pct===100?100:pct>=80?80:pct>=67?67:pct>=47?47:0;
+
+  document.getElementById('r-em').textContent=em;
+  document.getElementById('r-title').textContent=title;
+  document.getElementById('r-big').textContent=`${correct}/${QS.length}`;
+  document.getElementById('r-sub').textContent=`${score} puntos · ${pct}% de aciertos · Modo: ${mode==='timer'?'Contrarreloj':'5 Vidas'}`;
+  document.getElementById('r-stars').textContent=stars;
+  document.getElementById('r-msg').textContent=msgs[mKey];
+
+  // Answer key
+  const akRows=document.getElementById('ak-rows');
+  akRows.innerHTML='';
+  userAnswers.forEach((ua,i)=>{
+    const d=QS[ua.q];
+    const ok=ua.chosen===ua.correct;
+    const row=document.createElement('div');
+    row.className='ak-row';
+    const shortQ=d.q.length>80?d.q.slice(0,80)+'…':d.q;
+    row.innerHTML=`
+      <div class="ak-n">${ua.q+1}</div>
+      <div class="ak-text">
+        <strong>${ok?'✅':'❌'}</strong> ${shortQ}<br>
+        <span style="font-size:.72rem;color:${ok?'var(--green)':'var(--red)'}">
+          Correcta: ${String.fromCharCode(65+ua.correct)}. ${d.opts[ua.correct].slice(0,60)}${d.opts[ua.correct].length>60?'…':''}
+        </span>
+      </div>
+      <div class="ak-icon">${ok?'✅':'❌'}</div>`;
+    akRows.appendChild(row);
+  });
+
+  go('result');
+  if(pct>=80)launchConfetti();
+}
+
+// ──────────────── LEADERBOARD ────────────────
+function saveResult(){
+  const entries=getEntries();
+  const entry={
+    name:playerName,score,correct,total:QS.length,
+    pct:Math.round((correct/QS.length)*100),
+    mode,ts:Date.now()
+  };
+  const idx=entries.findIndex(e=>e.name.toLowerCase()===playerName.toLowerCase()&&e.mode===mode);
+  if(idx>=0){if(score>entries[idx].score)entries[idx]=entry;}
+  else entries.push(entry);
+  entries.sort((a,b)=>b.score-a.score||b.correct-a.correct);
+  localStorage.setItem('kauai_v2',JSON.stringify(entries));
+}
+
+function getEntries(){
+  try{return JSON.parse(localStorage.getItem('kauai_v2')||'[]');}catch{return[];}
+}
+
+function clearLB(){
+  if(confirm('¿Borrar todos los resultados?')){
+    localStorage.removeItem('kauai_v2');
+    renderLB();showToast('Tabla borrada ✓');
+  }
+}
+
+function renderLB(){
+  const entries=getEntries();
+  const body=document.getElementById('lb-body');
+  if(!entries.length){
+    body.innerHTML='<div class="lb-empty">📭 Sin resultados todavía. ¡Sé el primero en jugar!</div>';
+    return;
+  }
+  body.innerHTML='';
+  entries.forEach((e,i)=>{
+    const rk=i+1;
+    const rkCls=rk===1?'rk1':rk===2?'rk2':rk===3?'rk3':'rkn';
+    const rkSym=rk===1?'🥇':rk===2?'🥈':rk===3?'🥉':rk;
+    const sc=e.pct===100?'c-perfect':e.pct>=80?'c-high':e.pct>=67?'c-mid':'c-low';
+    const bc=e.pct===100?'var(--gold)':e.pct>=80?'var(--green)':e.pct>=67?'var(--blue)':'var(--red)';
+    const isMe=e.name.toLowerCase()===playerName.toLowerCase()&&e.mode===mode;
+    const mp=e.mode==='timer'?'mp-timer':'mp-lives';
+    const ml=e.mode==='timer'?'⏱ Contrarreloj':'❤️ 5 Vidas';
+    const row=document.createElement('div');
+    row.className='lb-row'+(isMe?' me':'');
+    row.style.animationDelay=(i*.05)+'s';
+    row.innerHTML=`
+      <div><div class="rank-icon ${rkCls}">${rkSym}</div></div>
+      <div class="lb-name-col">
+        <div class="name">${e.name}${isMe?' <span style="color:var(--teal);font-size:.72rem;">← tú</span>':''}</div>
+        <div class="meta"><span>${new Date(e.ts).toLocaleString('es-EC',{dateStyle:'short',timeStyle:'short'})}</span></div>
+      </div>
+      <div class="lb-pts ${sc}">${e.score}<div style="font-size:.68rem;color:var(--muted);font-weight:400">${e.pct}%</div></div>
+      <div class="lb-acc">
+        <div class="acc-num">${e.correct}/${e.total}</div>
+        <div class="acc-bar"><div class="acc-fill" style="width:${e.pct}%;background:${bc}"></div></div>
+      </div>
+      <div class="lb-mode"><span class="mode-pill ${mp}">${ml}</span></div>`;
+    body.appendChild(row);
+  });
+}
+
+// ──────────────── HELPERS ────────────────
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+function launchConfetti(){
+  const cols=['#00e5b4','#f5c518','#ff4757','#4da6ff','#2ed573','#c084fc','#ff6b35'];
+  for(let i=0;i<90;i++){
+    const el=document.createElement('div');
+    el.className='confetti-piece';
+    const size=6+Math.random()*8;
+    el.style.cssText=`
+      position:fixed;left:${Math.random()*100}vw;top:-12px;
+      width:${size}px;height:${size}px;
+      background:${cols[Math.floor(Math.random()*cols.length)]};
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+      animation:cffall ${1.4+Math.random()*2}s ease-in ${Math.random()*.8}s forwards;
+      z-index:9999;`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),4000);
+  }
+}
+</script>
+</body>
+</html>
